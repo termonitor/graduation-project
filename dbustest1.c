@@ -234,18 +234,22 @@ int create_paired_device(DBusGProxy *proxy)
 	GError *error = NULL;
 	char *method = "CreatePairedDevice";
 	DBusGObjectPath *ret;
-
-	if(!dbus_g_proxy_call(proxy, method, &error,
+	device_address = "9C:B7:0D:90:EC:52";
+	gchar *des = "dev_9C_B7_0D_90_EC_52";
+	g_print("create_paired_device \n");
+	while(!dbus_g_proxy_call(proxy, method, &error,
 						  G_TYPE_STRING, device_address,
-						  DBUS_TYPE_G_OBJECT_PATH, NULL,
-						  G_TYPE_STRING, "",
+						  DBUS_TYPE_G_OBJECT_PATH, "/test/agent",
+						  G_TYPE_STRING, "KeyboardDisplay",
 						  G_TYPE_INVALID,
 						  DBUS_TYPE_G_OBJECT_PATH, &ret,
 						  G_TYPE_INVALID)) {
 		g_printerr("call %s failed: %s\n", method, error->message);
 		g_error_free(error);
 		error = NULL;
-		return -1;
+		char *p = strchr(ret, 'd');
+		if(p) break;
+//		return -1;
 	}
 	return 0;
 }
@@ -291,10 +295,11 @@ int main(int argc, char *argv[])
 	g_main_loop_run (mainloop);
 
 	//if quit mainloop, that means we get a device
-	create_paired_device(adapt);
 //	DBusGObjectPath *device_path = create_device(adapt);
 /*	if(device_path != NULL) {
 		remove_device(adapt, device_path);
 	}*/
+	create_paired_device(adapt);
+	g_print("connection success\n");
 	return 0;
 }

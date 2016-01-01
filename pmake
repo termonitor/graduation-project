@@ -19,3 +19,9 @@ gcc -o myagent myagent.c -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbu
 
 dbus-binding-tool --mode=glib-server --prefix=my_agent MyAgent.xml>agent_stub.h
 
+
+ps -e|grep blueman
+dbus-send --system --dest=org.bluez --print-reply /xiaoming/agent org.bluez.Agent.RequestPinCode objpath:"/"
+
+"9C:B7:0D:90:EC:52", '/xiaoming/agent', "KeyboardDisplay"
+'/org/bluez/747/hci0/dev_9C_B7_0D_90_EC_52'
