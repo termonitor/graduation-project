@@ -1,0 +1,36 @@
+小包：
+aa aa 04 80 02 fc 9d e4
+aa aa 04 80 02 fc 35 4c
+aa aa 04 80 02 07 77 
+aa aa 04 80 02 07 77 
+aa aa 04 80 02 f9 7f 05 
+aa aa 04 80 02 ff 06 78 
+aa aa 04 80 02 06 23 54 
+aa aa 04 80 02 f8 00 85 
+aa aa 04 80 02 f8 00 85 
+aa aa 04 80 02 00 94 e9 
+aa aa 04 80 02 03 2d 4d 
+aa aa 04 80 02 f8 00 85 
+aa aa 04 80 02 07 ff 77 
+aa aa 04 80 02 07 ff 77 
+aa aa 04 80 02 01 05 77 
+aa aa 04 80 02 f8 14 71 
+aa aa 04 80 02 07 ff 77 
+aa aa 04 80 02 f8 00 85 
+aa aa 04 80 02 f8 00 85 
+aa aa 04 80 02 fa 14 6f 
+大包：
+aa aa 20 02 
+c8 
+83 18
+08 ac 17 -->Delta
+02 4f 14 -->Theta
+01 15 2b -->LowAlpha
+03 9d 08 -->HighAlpha
+02 31 6c -->LowBeta
+01 2c e6 -->HighBeta
+01 00 a8 -->LowGamma
+04 d2 c0 -->MiddleGamma
+04 00 -->Attention
+05 00 -->Mediation
+87 校验和

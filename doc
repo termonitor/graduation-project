@@ -1,0 +1,41 @@
+在最最开始，有许多的准备工作：
+比如说内核要支持蓝牙协议栈，然后要装blueman等东西，这个以后再补充，忘了。。
+之前装的一些东西的命令：
+（带-是没有在板子上安装成功的）
+sudo apt-get install bluetooth
+sudo apt-get install bluez
+sudo apt-get install libbluetooth-dev 
+sudo apt-get install openssh-server 
+sudo apt-get install blueman -
+sudo apt-get install dbus
+sudo apt-get install libdbus-1-dev -
+sudo apt-get install libdbus-glib-1-dev -
+sudo apt-get install d-feet
+"/etc/init.d/bluetooth start"可能有用。
+
+初始状态检查：
+命令hciconfig 中一般为空
+
+启动hci0端口的步骤：
+(插入蓝牙适配器时，在d-feet的SystemBus中已经可以检测出org.bluez的/org/bluez/478/hci0和/org/bluez/478/hci0/dev_9C_B7_0D_90_EC_52)
+rfkill unblock all
+sudo hciconfig hci0 up =====> 对应/org/bluez/478/hci0的GetProperties的Powered字段true
+
+设置自己的agent：
+首先先从进程中将系统自带的blueman-agent杀掉，然后再设置自己的agent
+ps -e|grep blueman
+kill -9 进程号
+sudo ./simple-agent
+
+准备工作做完以后：
+1.首先通过org.bluez.Manager中的getDefaultAdapter方法获取蓝牙适配器的Adapter对象
+2.然后通过adapter的SetProperties方法设置Power属性为true
+3.调用org.bluez.Adapter的StartDiscovery方法设置开始搜索
+4.g_main_loop_run则是进入主循环，它会一直阻塞在这里，直到让它退出为止。有事件时，它就处理事件，没事件时就睡眠。
+5.create_paired_device 对蓝牙耳机进行pair操作，操作后产生/org/bluez/478/hci0/dev_9C_B7_0D_90_EC_52，且Paired属性为true
+6.通过test1.c中的东西，可以将脑波耳机中的数据读出为连续的二进制数据，然后就可以进行解析的过程。
+
+
+将SD卡挂接到zedboard上：
+mount /dev/mmcblk0p1 /mnt/SD
+

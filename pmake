@@ -1,0 +1,32 @@
+gcc -o dbustest dbustest.c -I /usr/include/dbus-1.0/ -I /usr/include/glib-2.0/ -I /usr/lib/x86_64-linux-gnu/glib-2.0/include -I /usr/lib/x86_64-linux-gnu/dbus-1.0/include -ldbus-1
+
+gcc -o dbustest1 dbustest1.c marshal.c -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -ldbus-glib-1 -ldbus-1 -lgobject-2.0 -lglib-2.0 
+
+
+dbus-monitor --system type='signal' interface='org.bluez.Adapter'
+marshal.list文件
+glib-genmarshal --header --prefix=marshal marshal.list > marshal.h
+glib-genmarshal --body --prefix=marshal marshal.list > marshal.c
+注册
+dbus_g_object_register_marshaller(marshal_VOID__INT_STRING_STRING_INT_UINT, 
+ G_TYPE_NONE, G_TYPE_INT, G_TYPE_STRING, 
+ G_TYPE_STRING, G_TYPE_INT, G_TYPE_UINT, 
+ G_TYPE_INVALID);
+
+
+
+gcc -o myagent myagent.c -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -ldbus-glib-1 -ldbus-1 -lgobject-2.0 -lglib-2.0
+
+dbus-binding-tool --mode=glib-server --prefix=my_agent MyAgent.xml>agent_stub.h
+
+ps -e|grep blueman
+dbus-send --system --dest=org.bluez --print-reply /xiaoming/agent org.bluez.Agent.RequestPinCode objpath:"/"
+
+"9C:B7:0D:90:EC:52", '/xiaoming/agent', "KeyboardDisplay"
+'/org/bluez/747/hci0/dev_9C_B7_0D_90_EC_52'
+
+rfkill unblock all
+sudo hciconfig hci0 up
+sudo ./simple-agent
+
+gcc -o test1 test1.c -lbluetooth
