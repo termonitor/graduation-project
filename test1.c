@@ -1,8 +1,12 @@
-#include<stdio.h>
-#include<unistd.h>
-#include<sys/socket.h>
-#include<bluetooth/bluetooth.h>
-#include<bluetooth/rfcomm.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/rfcomm.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define PARSER_STATE_SYNC 1
 #define PARSER_STATE_SYNC_CHECK 2
