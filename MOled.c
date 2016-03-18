@@ -1,14 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include "MOled.h"
+//#include "MOled.h"
+
+extern int fd_oled;
+extern char oledImage[512];
 
 void getOledFD()
 {
-	fd = open("/dev/zed_oled",O_RDWR);
-	if(fd == -1) {
+	fd_oled = open("/dev/zed_oled",O_RDWR);
+	if(fd_oled == -1) {
 		printf("Can't open zed_oled device!\n");
 	} 
 	else {
@@ -18,7 +16,7 @@ void getOledFD()
 
 void printImage()
 {
-	write(fd, oledImage, 128*4);
+	write(fd_oled, oledImage, 128*4);
 }
 
 /**

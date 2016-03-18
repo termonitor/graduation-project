@@ -1,8 +1,14 @@
-#ifndef __M_OLED__
-#define __M_OLED__
+#ifndef __M_OLED_H__
+#define __M_OLED_H__
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 //body
-int fd;					//用于存放/dev/zed_oled"的句柄
+int fd_oled;					//用于存放/dev/zed_oled"的句柄
 char oledImage[512];	//存放要输出的数组信息
 
 void getOledFD();		//获取设备句柄

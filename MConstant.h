@@ -1,5 +1,5 @@
-#ifndef __M_CONSTANT__
-#define __M_CONSTANT__
+#ifndef __M_CONSTANT_H__
+#define __M_CONSTANT_H__
 
 //body
 #define PARSER_STATE_SYNC 1
