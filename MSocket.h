@@ -13,6 +13,7 @@
 struct sockaddr_rc addr;
 int s;
 char dest[18];
+int socket_status;
 int initSocket();
 int tryConnect();
 void* threadSocket();

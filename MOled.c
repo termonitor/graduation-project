@@ -1,7 +1,12 @@
-//#include "MOled.h"
+#include "MOled.h"
 
 extern int fd_oled;
 extern char oledImage[512];
+
+void clearImage()
+{
+	memset(oledImage, 0X0, sizeof(oledImage));
+}
 
 void getOledFD()
 {
@@ -217,12 +222,12 @@ void setNum(int loc, int num)
         offset2 += (loc-2)*12+11;
         offset3 += (loc-2)*12+11;   
     }
-    strcpy(Image+offset1, part1);
-    strcpy(Image+offset2, part2);
-    strcpy(Image+offset3, part3); 
+    strcpy(oledImage+offset1, part1);
+    strcpy(oledImage+offset2, part2);
+    strcpy(oledImage+offset3, part3); 
     if(num == 0)
     {
-        strcpy(Image+offset2+7, part2+7);
+        strcpy(oledImage+offset2+7, part2+7);
     }
 }
 

@@ -2,15 +2,17 @@
 
 extern struct sockaddr_rc addr;
 extern int s;
+extern int socket_status;
 extern char dest[18];
 
 int initSocket()
 {
 	//初始化变量
+	socket_status = 0;
 	memset((char*)&addr, 0, sizeof(addr));
 	strcpy(dest, "9C:B7:0D:90:EC:52");
 	s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
-	printf("%s\n", dest);
+//	printf("%s\n", dest);
 	//设置sockaddr_rc
 	addr.rc_family = AF_BLUETOOTH;
 	addr.rc_channel = (uint8_t)1;
@@ -24,6 +26,7 @@ int tryConnect()
 	{
 		return -1;
 	}
+	socket_status = 1;
 	return 0;
 }
 

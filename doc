@@ -38,4 +38,5 @@ sudo ./simple-agent
 
 将SD卡挂接到zedboard上：
 mount /dev/mmcblk0p1 /mnt/SD
-
+卸载:
+umount /mnt/SD
