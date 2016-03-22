@@ -21,7 +21,7 @@ int main()
 	}
 	pthread_join(thread_socket, NULL);
 	printf("successful!\n");
-	//此处应该点亮某个灯，作为连接上的象征。
+	//此处应该点亮LD灯，作为连接上的象征。
 	memset(buf, 0, sizeof(buf));
 	getOledFD();
 	int len = 0;
@@ -30,6 +30,9 @@ int main()
 		initParser();
 		do {
 			len = read(s, buf, sizeof(buf));
+			//正常数据长度为80
+			if(len != 80)
+				break;
 			if(len > 0) {
 				buf[len] = 0;
 				int j;
@@ -38,9 +41,12 @@ int main()
 				}
 			}
 		} while(len > 0);
-		if(len <= 0)
+		if(len <= 0 || len != 80)
 		{
-			//熄灭某灯，表示断开连接	
+			//熄灭LD灯，表示断开连接	
+			printf("socket close, try connect again!\n");
+			//关闭当前连接
+			close(s);
 			result = pthread_create(&thread_socket, NULL, threadSocket, NULL);
 			if(result != 0)
 			{

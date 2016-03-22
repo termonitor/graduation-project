@@ -11,6 +11,11 @@ extern char oledImage[512];
 void initParser()
 {
 	parserStatus = PARSER_STATE_SYNC;
+	payloadLength = 0;
+	payloadBytesReceived = 0;
+	payloadSum = 0;
+	checkSum = 0;
+	memset(payload, 0, sizeof(payload));
 	clearImage();
 	printImage();
 }
@@ -175,6 +180,11 @@ int parseByte(char buffer)
 				parserStatus = PARSER_STATE_SYNC;
 			break;
 		case 3:
+			if((buffer & 0XFF) != 4 && (buffer & 0XFF) != 32)
+			{
+				parserStatus = PARSER_STATE_SYNC;
+				break;
+			}
 			payloadLength = (buffer & 0xFF);
 			payloadBytesReceived = 0;
 			payloadSum = 0;

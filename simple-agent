@@ -120,7 +120,8 @@ if __name__ == '__main__':
 #					reply_handler=create_device_reply,
 #					error_handler=create_device_error)
 #	else:
-	adapter.RegisterAgent(path, "KeyboardDisplay")
+#	adapter.RegisterAgent(path, "KeyboardDisplay")
+	adapter.RegisterAgent(path, "DisplayYesNo");
 	print "Agent registered"
 #
 	mainloop.run()
