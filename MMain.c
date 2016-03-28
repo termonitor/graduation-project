@@ -5,6 +5,7 @@
 #include "MOled.h"
 #include "MSocket.h"
 #include "MParser.h"
+#include "MGPio.h"
 
 pthread_t thread_socket;
 char buf[256];
@@ -22,6 +23,8 @@ int main()
 	pthread_join(thread_socket, NULL);
 	printf("successful!\n");
 	//此处应该点亮LD灯，作为连接上的象征。
+	initGpio();
+	setLedValue(7, 1);
 	memset(buf, 0, sizeof(buf));
 	getOledFD();
 	int len = 0;
@@ -44,6 +47,7 @@ int main()
 		if(len <= 0 || len != 80)
 		{
 			//熄灭LD灯，表示断开连接	
+			setLedValue(7, 0);
 			printf("socket close, try connect again!\n");
 			//关闭当前连接
 			close(s);
