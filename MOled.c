@@ -19,6 +19,13 @@ void getOledFD()
 	}
 }
 
+void closeOled()
+{
+	clearImage();
+	printImage();
+	close(fd_oled);
+}
+
 void printImage()
 {
 	write(fd_oled, oledImage, 128*4);

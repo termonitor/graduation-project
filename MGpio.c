@@ -4,14 +4,16 @@ extern int fd_export;
 extern int fd_led[8];
 extern int fd_led_value[8];
 extern int fd_sw[8];
-extern char ld_number[8][3];
-extern char sw_number[8][3];
+char ld_number[8][3] = {"61", "62", "63", "64", "65", "66", "67", "68"};
+char sw_number[8][3] = {"69", "70", "71", "72", "73", "74", "75", "76"};
+extern char sw_status[8];
 
 void initGpio()
 {
+	int i;
 	//获取export的句柄，并初始化61-76的gpio口
 	fd_export  = open(M_GPIO_EXPORT, O_WRONLY);
-	for(int i=0; i<8; i++)
+	for(i=0; i<8; i++)
 	{
 		write(fd_export, ld_number[i], sizeof(ld_number[i]));
 		write(fd_export, sw_number[i], sizeof(ld_number[i]));
@@ -25,7 +27,7 @@ void initGpio()
 	fd_led[5] = open(M_GPIO_DIRECTION(66), O_RDWR);
 	fd_led[6] = open(M_GPIO_DIRECTION(67), O_RDWR);
 	fd_led[7] = open(M_GPIO_DIRECTION(68), O_RDWR);
-	for(int i=0; i<8; i++)
+	for(i=0; i<8; i++)
 	{
 		write(fd_led[i], "out", sizeof("out"));
 	}
@@ -48,11 +50,43 @@ void initGpio()
 	fd_sw[5] = open(M_GPIO_VALUE(74), O_RDONLY);
 	fd_sw[6] = open(M_GPIO_VALUE(75), O_RDONLY);
 	fd_sw[7] = open(M_GPIO_VALUE(76), O_RDONLY);
+	//初始化sw的状态值和LD的值
+	for(i=0; i<8; i++)
+	{
+		sw_status[i] = '0';
+		write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
+	}
+}
+
+void closeGpio()
+{
+	int i;
+	for(i=0; i<8; i++)
+	{
+		write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
+	}
+	for(i=0; i<8; i++)
+	{
+		close(fd_sw[i]);
+		close(fd_led_value[i]);
+		close(fd_led[i]);
+	}
+	close(fd_export);
+	fd_export  = open(M_GPIO_UNEXPORT, O_WRONLY);
+	//此处不用关闭gpio76，因为gpio76用于启动脚本，所以不必关闭
+	for(i=0; i<8; i++)
+	{
+		write(fd_export, ld_number[i], sizeof(ld_number[i]));
+		if(i != 7)
+			write(fd_export, sw_number[i], sizeof(ld_number[i]));
+	}
+	close(fd_export);
 }
 
 void clearLed()
 {
-	for(int i=0; i<8; i++)
+	int i;
+	for(i=0; i<8; i++)
 	{
 		write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
 	}
@@ -60,20 +94,27 @@ void clearLed()
 
 void updateLed()
 {
+	int i;
 	//SW7专门用于启动脚本startup.sh，所以这里对于SW7不响应
 	char sw_value;
-	for(int i=0; i<7; i++)
+	for(i=0; i<7; i++)
 	{
 		sw_value = '0';
 		read(fd_sw[i], &sw_value, sizeof(sw_value));
-		if(sw_value == GPIO_TRUE)
+		sw_status[i] = sw_value;
+		if(sw_value == '1')
 			write(fd_led_value[i], GPIO_TRUE, sizeof(GPIO_TRUE));
+		else
+			write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
 	}
 }
 
 void setLedValue(int number, int status)
 {
 	if(status)
+	{
 		write(fd_led_value[number], GPIO_TRUE, sizeof(GPIO_TRUE));
+		return;
+	}
 	write(fd_led_value[number], GPIO_FALSE, sizeof(GPIO_FALSE));
 }

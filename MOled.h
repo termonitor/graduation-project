@@ -14,6 +14,7 @@ char oledImage[512];	//存放要输出的数组信息
 
 void clearImage();
 void getOledFD();		//获取设备句柄
+void closeOled();		//关闭设备句柄
 void printImage();		//输出函数
 void setNum(int loc, int num);	//设置每个位置的数组信息
 void handleNumber(int num);		//根据数字生成数组

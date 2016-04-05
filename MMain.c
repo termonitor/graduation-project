@@ -14,6 +14,7 @@ extern int socket_status;
 
 int main()
 {
+	initGpio();
 	int result = pthread_create(&thread_socket, NULL, threadSocket, NULL);
 	if(result != 0)
 	{
@@ -23,7 +24,6 @@ int main()
 	pthread_join(thread_socket, NULL);
 	printf("successful!\n");
 	//此处应该点亮LD灯，作为连接上的象征。
-	initGpio();
 	setLedValue(7, 1);
 	memset(buf, 0, sizeof(buf));
 	getOledFD();
@@ -51,6 +51,7 @@ int main()
 			printf("socket close, try connect again!\n");
 			//关闭当前连接
 			close(s);
+			/*
 			result = pthread_create(&thread_socket, NULL, threadSocket, NULL);
 			if(result != 0)
 			{
@@ -59,6 +60,11 @@ int main()
 			}
 			pthread_join(thread_socket, NULL);
 			memset(buf, 0, sizeof(buf));
+			*/
+			//暂时设为断开连接，即为退出程序，这里做清除句柄的工作
+			closeOled();
+			closeGpio();
+			return 0;
 		}
 	}
 	return 0;

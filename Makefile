@@ -1,4 +1,4 @@
-Mobjects = MMain.o MSocket.o MParser.o MOled.o MGpio
+Mobjects = MMain.o MSocket.o MParser.o MOled.o MGpio.o
 
 edit:$(Mobjects)
 	gcc -o main $(Mobjects) -lbluetooth -lpthread
