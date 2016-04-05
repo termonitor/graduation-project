@@ -7,6 +7,8 @@ extern int fd_sw[8];
 char ld_number[8][3] = {"61", "62", "63", "64", "65", "66", "67", "68"};
 char sw_number[8][3] = {"69", "70", "71", "72", "73", "74", "75", "76"};
 extern char sw_status[8];
+extern int function_status;
+extern pthread_mutex_t mut;
 
 void initGpio()
 {
@@ -56,6 +58,9 @@ void initGpio()
 		sw_status[i] = '0';
 		write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
 	}
+	//程序启动，说明SW7是开状态的
+	sw_status[7] = '1';
+	function_status = 0;
 }
 
 void closeGpio()
@@ -92,11 +97,30 @@ void clearLed()
 	}
 }
 
+void rGetSWFD()
+{
+	int i;
+	for(i=0; i<8; i++)
+	{
+		close(fd_sw[i]);
+	}
+	fd_sw[0] = open(M_GPIO_VALUE(69), O_RDONLY);
+	fd_sw[1] = open(M_GPIO_VALUE(70), O_RDONLY);
+	fd_sw[2] = open(M_GPIO_VALUE(71), O_RDONLY);
+	fd_sw[3] = open(M_GPIO_VALUE(72), O_RDONLY);
+	fd_sw[4] = open(M_GPIO_VALUE(73), O_RDONLY);
+	fd_sw[5] = open(M_GPIO_VALUE(74), O_RDONLY);
+	fd_sw[6] = open(M_GPIO_VALUE(75), O_RDONLY);
+	fd_sw[7] = open(M_GPIO_VALUE(76), O_RDONLY);
+}
+
 void updateLed()
 {
 	int i;
 	//SW7专门用于启动脚本startup.sh，所以这里对于SW7不响应
 	char sw_value;
+	//重新获取SW的句柄，因为每次读取设备文件后，读取位置会变，因此这里要关闭原有句柄，重新打开新句柄
+	rGetSWFD();
 	for(i=0; i<7; i++)
 	{
 		sw_value = '0';
@@ -106,6 +130,24 @@ void updateLed()
 			write(fd_led_value[i], GPIO_TRUE, sizeof(GPIO_TRUE));
 		else
 			write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
+	}
+	//根据sw_status更新function_status
+	function_status = 0;
+	for(i=0; i<7; i++)
+	{
+		if(sw_status[i] == '1')
+			function_status += 1<<i;
+	}
+}
+
+void* swThread()
+{
+	while(1)
+	{
+		pthread_mutex_lock(&mut);
+		updateLed();
+		pthread_mutex_unlock(&mut);
+		sleep(3);
 	}
 }
 

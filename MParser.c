@@ -20,7 +20,7 @@ void initParser()
 	printImage();
 }
 
-int getRawWaveValue(char highOrderByte, char lowOrderByte)
+int getRawValue(char highOrderByte, char lowOrderByte)
 {
 	int hi = ((int)highOrderByte) & 0xFF;
 	int lo = ((int)lowOrderByte) & 0xFF;
@@ -43,10 +43,9 @@ void parsePacketPayload()
 	int extendedCodeLevel = 0;
     int code = 0;
     int valueBytesLength = 0;
-	int signal = 0; 
-	int config = 0; 
+	int poorSignal = 0; 
 	int heartrate = 0;
-    int rawWaveData = 0;
+    int raw = 0;
 	int delta = 0;
 	int theta = 0;
 	int lowAlpha = 0;
@@ -57,6 +56,9 @@ void parsePacketPayload()
 	int middleGamma = 0;
 	int attention = 0;
 	int meditation = 0;
+	int signal[12];
+	//此信号用于表示是小包，还是大包，0为小包，1为大包
+	int config;
 	while(i < payloadLength)
 	{
 		extendedCodeLevel++;
@@ -71,27 +73,29 @@ void parsePacketPayload()
 			valueBytesLength = 1;
 		if(code == PARSER_CODE_RAW)
 		{
+			config = 0;
 			if(valueBytesLength == RAW_DATA_BYTE_LENGTH)
 			{
 				char highOrderByte = payload[i];
 				char lowOrderByte = payload[i+1];
-				rawWaveData = getRawWaveValue(highOrderByte, lowOrderByte);
-				if (rawWaveData > 32768) 
-					rawWaveData -= 65536;
+				raw = getRawValue(highOrderByte, lowOrderByte);
+				if (raw > 32768) 
+					raw -= 65536;
 				//输出Raw的值
-//				fprintf(fp1, "Raw:%d\n", rawWaveData);
+//				fprintf(fp1, "Raw:%d\n", raw);
 			}
 			i += valueBytesLength;
 		}
 		else
 		{
+			config = 1;
 			switch(code)
 			{
 				case PARSER_CODE_POOR_SIGNAL:
-					signal = payload[i] & 0xFF;
+					poorSignal = payload[i] & 0xFF;
 					i += valueBytesLength;
 					//输出PoorSignal的值
-//					fprintf(fp1, "PoorSignal:%d\n", signal);
+//					fprintf(fp1, "PoorSignal:%d\n", poorSignal);
 					break;
 				case PARSER_CODE_EEG_POWER:
 //					fprintf(fp1, "hello\n");
@@ -131,9 +135,9 @@ void parsePacketPayload()
 					attention = (int)payload[i];
 					i += valueBytesLength;
 //					fprintf(fp1, "attention:%d\n", attention);
-					clearImage();
+/*					clearImage();
 					handleNumber(attention);
-					printImage();
+					printImage(); */
 					break;
 				case PARSER_CODE_MEDITATION:
 					meditation = (int)payload[i];
@@ -161,6 +165,12 @@ void parsePacketPayload()
 		}
 	}
 	parserStatus = PARSER_STATE_SYNC;
+	//在执行完循环后，执行功能函数
+	signal[0] = poorSignal, signal[1] = raw, signal[2] = delta;
+	signal[3] = theta, signal[4] = lowAlpha, signal[5] = highAlpha;
+	signal[6] = lowBeta, signal[7] = highBeta, signal[8] = lowGamma;
+	signal[9] = middleGamma, signal[10] = attention, signal[11] = meditation;
+	action(signal, config);
 }
 
 int parseByte(char buffer)

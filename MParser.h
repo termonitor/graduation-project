@@ -6,6 +6,7 @@
 #include <string.h>
 #include "MConstant.h"
 #include "MOled.h"
+#include "MAction.h"
 //body
 int parserStatus;
 int payloadLength;
@@ -14,7 +15,7 @@ int payloadSum;
 int checkSum;
 int payload[256];
 void initParser();
-int getRawWaveValue(char highOrderByte, char lowOrderByte);
+int getRawValue(char highOrderByte, char lowOrderByte);
 int getEEGValue(char highOrderByte, char middleOrderByte, char lowOrderByte);
 int parseByte(char buffer);
 void parsePacketPayload();

@@ -5,9 +5,11 @@
 #include "MOled.h"
 #include "MSocket.h"
 #include "MParser.h"
-#include "MGPio.h"
+#include "MGpio.h"
 
 pthread_t thread_socket;
+pthread_t thread_sw;
+pthread_mutex_t mut;
 char buf[256];
 extern int s;
 extern int socket_status;
@@ -15,6 +17,8 @@ extern int socket_status;
 int main()
 {
 	initGpio();
+	pthread_mutex_init(&mut, NULL);
+	pthread_create(&thread_sw, NULL, swThread, NULL); 
 	int result = pthread_create(&thread_socket, NULL, threadSocket, NULL);
 	if(result != 0)
 	{
@@ -36,6 +40,7 @@ int main()
 			//正常数据长度为80
 			if(len != 80)
 				break;
+//			updateLed();
 			if(len > 0) {
 				buf[len] = 0;
 				int j;
