@@ -1,4 +1,4 @@
-Mobjects = MMain.o MSocket.o MParser.o MOled.o MGpio.o MAction.o
+Mobjects = MMain.o MSocket.o MParser.o MOled.o MGpio.o MAction.o MBasic.o
 
 edit:$(Mobjects)
 	gcc -o main $(Mobjects) -lbluetooth -lpthread
@@ -8,11 +8,13 @@ MSocket.o: MSocket.c MSocket.h
 	gcc -c MSocket.c -lbluetooth
 MParser.o: MParser.c MParser.h MConstant.h MOled.h MAction.h
 	gcc -c MParser.c
-MOled.o: MOled.c MOled.h
+MOled.o: MOled.c MOled.h MBasic.h
 	gcc -c MOled.c
 MGpio.o: MGpio.c MGpio.h
 	gcc -c MGpio.c
 MAction.o: MAction.c MAction.h MOled.h MGpio.h
 	gcc -c MAction.c
+MBasic.o: MBasic.c MBasic.h
+	gcc -c MBasic.c
 clean:
 	rm main $(Mobjects)
