@@ -2,6 +2,8 @@
 
 extern int function_status;
 extern pthread_mutex_t mut;
+extern FILE* fp_small;
+extern FILE* fp_big;
 
 void oledOutput(int num, int status)
 {
@@ -59,6 +61,9 @@ void oledOutput(int num, int status)
 void action(int *signal, int config)
 {
 	pthread_mutex_lock(&mut);
+	char buffer[1024];
+	memset(buffer, '\0', sizeof(buffer));
+/*
 	if(config == 0 && function_status == 1)
 	{
 		//数据量太大，oled来不及显示，所以对于raw不做显示
@@ -67,8 +72,11 @@ void action(int *signal, int config)
 		pthread_mutex_unlock(&mut);
 		return;
 	}
+*/
 	if(config == 0)
 	{
+		snprintf(buffer, 1024, "%d\n", signal[1]);
+		fwrite(buffer, 1, strlen(buffer), fp_small);
 		pthread_mutex_unlock(&mut);
 		return;
 	}
@@ -111,5 +119,9 @@ void action(int *signal, int config)
 			oledOutput(signal[9], 11); //middleGamma
 			break;
 	}
+	snprintf(buffer, 1024, "%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d\n", 
+				signal[10], signal[11], signal[0], signal[2], signal[3], signal[4], 
+				signal[5], signal[6], signal[7], signal[8], signal[9]);
+	fwrite(buffer, 1, strlen(buffer), fp_big);
 	pthread_mutex_unlock(&mut);
 }

@@ -6,6 +6,7 @@
 #include "MSocket.h"
 #include "MParser.h"
 #include "MGpio.h"
+#include "MFile.h"
 
 pthread_t thread_socket;
 pthread_t thread_sw;
@@ -30,6 +31,7 @@ int main()
 	//此处应该点亮LD灯，作为连接上的象征。
 	setLedValue(7, 1);
 	memset(buf, 0, sizeof(buf));
+	initFile();
 	getOledFD();
 	int len = 0;
 	while(socket_status)
@@ -69,6 +71,7 @@ int main()
 			//暂时设为断开连接，即为退出程序，这里做清除句柄的工作
 			closeOled();
 			closeGpio();
+			closeFile();
 			return 0;
 		}
 	}
