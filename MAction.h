@@ -7,6 +7,9 @@
 #include "MGpio.h"
 #include "MFile.h"
 
+int gameLdStatus;
+
 void action(int *signal, int config);
+void initAction();
 
 #endif

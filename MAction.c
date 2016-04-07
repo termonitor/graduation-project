@@ -4,6 +4,12 @@ extern int function_status;
 extern pthread_mutex_t mut;
 extern FILE* fp_small;
 extern FILE* fp_big;
+extern int gameLdStatus;
+
+void initAction()
+{
+	gameLdStatus = -1;
+}
 
 void oledOutput(int num, int status)
 {
@@ -50,6 +56,33 @@ void oledOutput(int num, int status)
 	printImage();
 }
 
+void game1(int attention)
+{
+//	setLedValue(int number, int status)
+	int oldStatus = gameLdStatus;
+	if(attention>50 && gameLdStatus>=-1 && gameLdStatus<6)
+	{
+		gameLdStatus++;
+	}
+	else if(attention<50 && gameLdStatus>-1 && gameLdStatus<=6)
+	{
+		gameLdStatus--;
+	}
+	if(oldStatus == gameLdStatus)
+	{
+		//do nothing
+	} 
+	else if(oldStatus < gameLdStatus)
+	{
+		//点亮一盏新灯
+		setLedValue(gameLdStatus, 1);
+	}
+	else if(oldStatus > gameLdStatus)
+	{
+		setLedValue(oldStatus, 0);
+	}
+}
+
 /**
 	signal[0] = poorSignal, signal[1] = raw, signal[2] = delta;
 	signal[3] = theta, signal[4] = lowAlpha, signal[5] = highAlpha;
@@ -80,13 +113,19 @@ void action(int *signal, int config)
 		pthread_mutex_unlock(&mut);
 		return;
 	}
+	if(function_status != 1)
+	{
+		initAction();
+	}
 	switch(function_status)
 	{
 		case 0:
 			oledOutput(signal[10], 0);	//attention
 			break;
 		case 1:
-			oledOutput(0, -1);
+			//oledOutput(0, -1);
+			oledOutput(signal[10], 0);
+			game1(signal[10]);
 			break;
 		case 2:
 			oledOutput(signal[11], 2); //meditation

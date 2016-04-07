@@ -126,10 +126,6 @@ void updateLed()
 		sw_value = '0';
 		read(fd_sw[i], &sw_value, sizeof(sw_value));
 		sw_status[i] = sw_value;
-		if(sw_value == '1')
-			write(fd_led_value[i], GPIO_TRUE, sizeof(GPIO_TRUE));
-		else
-			write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
 	}
 	//根据sw_status更新function_status
 	function_status = 0;
@@ -137,6 +133,20 @@ void updateLed()
 	{
 		if(sw_status[i] == '1')
 			function_status += 1<<i;
+	}
+	if(function_status == 1)
+		return;
+	//将灯光点亮的工作后移。
+	for(i=0; i<7; i++)
+	{
+		if(sw_status[i] == '1')
+		{
+			write(fd_led_value[i], GPIO_TRUE, sizeof(GPIO_TRUE));
+		}
+		else
+		{
+			write(fd_led_value[i], GPIO_FALSE, sizeof(GPIO_FALSE));
+		}
 	}
 }
 

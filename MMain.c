@@ -7,6 +7,7 @@
 #include "MParser.h"
 #include "MGpio.h"
 #include "MFile.h"
+#include "MAction.h"
 
 pthread_t thread_socket;
 pthread_t thread_sw;
@@ -32,6 +33,7 @@ int main()
 	setLedValue(7, 1);
 	memset(buf, 0, sizeof(buf));
 	initFile();
+	initAction();
 	getOledFD();
 	int len = 0;
 	while(socket_status)

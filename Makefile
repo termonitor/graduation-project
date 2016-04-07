@@ -2,7 +2,7 @@ Mobjects = MMain.o MSocket.o MParser.o MOled.o MGpio.o MAction.o MBasic.o MFile.
 
 edit:$(Mobjects)
 	gcc -o main $(Mobjects) -lbluetooth -lpthread
-MMain.o: MMain.c MConstant.h MSocket.h MOled.h MParser.h MGpio.h MFile.h 
+MMain.o: MMain.c MConstant.h MSocket.h MOled.h MParser.h MGpio.h MFile.h MAction.h
 	gcc -c MMain.c -lpthread
 MSocket.o: MSocket.c MSocket.h
 	gcc -c MSocket.c -lbluetooth
