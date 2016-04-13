@@ -26,7 +26,7 @@
 // Filename:          user_logic.v
 // Version:           1.00.a
 // Description:       User logic module.
-// Date:              Mon Apr 11 17:09:43 2016 (by Create and Import Peripheral Wizard)
+// Date:              Wed Apr 13 17:31:01 2016 (by Create and Import Peripheral Wizard)
 // Verilog Standard:  Verilog-2001
 //----------------------------------------------------------------------------
 // Naming Conventions:
@@ -78,7 +78,7 @@ module user_logic
 
 // -- DO NOT EDIT BELOW THIS LINE --------------------
 // -- Bus protocol parameters, do not add to or delete
-parameter C_NUM_REG                      = 10;
+parameter C_NUM_REG                      = 11;
 parameter C_SLV_DWIDTH                   = 32;
 // -- DO NOT EDIT ABOVE THIS LINE --------------------
 
@@ -122,8 +122,9 @@ output                                    IP2Bus_Error;
   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg7;
   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg8;
   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg9;
-  wire       [9 : 0]                        slv_reg_write_sel;
-  wire       [9 : 0]                        slv_reg_read_sel;
+  reg        [C_SLV_DWIDTH-1 : 0]           slv_reg10;
+  wire       [10 : 0]                       slv_reg_write_sel;
+  wire       [10 : 0]                       slv_reg_read_sel;
   reg        [C_SLV_DWIDTH-1 : 0]           slv_ip2bus_data;
   wire                                      slv_read_ack;
   wire                                      slv_write_ack;
@@ -132,10 +133,10 @@ output                                    IP2Bus_Error;
   // USER logic implementation added here
   assign lowbeta = slv_reg0;
   assign highbeta = slv_reg1;
-  assign lowgamma = slv_reg2;
-  assign oldlowbeta = slv_reg5;
-  assign oldhighbeta = slv_reg6;
-  assign oldlowgamma = slv_reg7;
+  assign lowgamma = slv_reg3;
+  assign oldlowbeta = slv_reg6;
+  assign oldhighbeta = slv_reg7;
+  assign oldlowgamma = slv_reg8;
   assign lowbeta_result = (lowbeta1+oldlowbeta) >> 1;
   assign highbeta_result = (highbeta1+oldhighbeta) >> 1;
   assign lowgamma_result = (lowgamma1+oldlowgamma) >> 1;
@@ -146,37 +147,40 @@ output                                    IP2Bus_Error;
   
   always @(posedge Bus2IP_Clk)
 	  begin
-		  if(oldlowbeta != 32'h0000_0000 && oldlowbeta>=32'h0000_21A9 && oldlowbeta<=32'h0000_891D)
-			 slv_reg5 = lowbeta_result;
+		  // && oldlowbeta<=32'h0000_891D
+		  if(oldlowbeta>=32'h0000_21A9)
+			 slv_reg6 = lowbeta_result;
 		  else
-			 slv_reg5 = slv_reg0;
-		  if(oldhighbeta != 32'h0000_0000 && oldhighbeta>=32'h0000_1AC2 && oldhighbeta<=32'h0000_79A0)
-			 slv_reg6 = highbeta_result;
+			 slv_reg6 = slv_reg0;
+		  // && oldhighbeta<=32'h0000_79A0
+		  if(oldhighbeta>=32'h0000_1AC2)
+			 slv_reg7 = highbeta_result;
 		  else
-			 slv_reg6 = slv_reg1;
-		  if(oldlowgamma != 32'h0000_0000 && oldlowgamma>=32'h0000_0D8B && oldlowgamma<=32'h0000_4301)
-			 slv_reg7 = lowgamma_result;
+			 slv_reg7 = slv_reg1;
+		  // && oldlowgamma<=32'h0000_4301
+		  if(oldlowgamma>=32'h0000_0D8B)
+			 slv_reg8 = lowgamma_result;
 		  else
-			 slv_reg7 = slv_reg2;
-		  slv_reg8 = 32'h0000_0000;
+			 slv_reg8 = slv_reg3;
+		  slv_reg9 = 32'h0000_0000;
 		  if((lowbeta_result >= 32'h0000_21A9)&&(lowbeta_result <= 32'h0000_3224))
-			 slv_reg8 = slv_reg8 + 32'h0000_0001;
+			 slv_reg9 = slv_reg9 + 32'h0000_0001;
 		  else if((lowbeta_result >=32'h0000_3869)&&(lowbeta_result <= 32'h0000_891D))
-			 slv_reg8 = slv_reg8 + 32'h0001_0000;
+			 slv_reg9 = slv_reg9 + 32'h0001_0000;
 		  if((highbeta_result >= 32'h0000_1AC2)&&(highbeta_result <= 32'h0000_2DF9))
-			 slv_reg8 = slv_reg8 + 32'h0000_0001;
+			 slv_reg9 = slv_reg9 + 32'h0000_0001;
 		  else if((highbeta_result >= 32'h0000_2FA3)&&(highbeta_result <= 32'h0000_79A0))
-			 slv_reg8 = slv_reg8 + 32'h0001_0000;
+			 slv_reg9 = slv_reg9 + 32'h0001_0000;
 		  if((lowgamma_result >= 32'h0000_0D8B)&&(lowgamma_result <= 32'h0000_1D4A))
-			 slv_reg8 = slv_reg8 + 32'h0000_0001;
+			 slv_reg9 = slv_reg9 + 32'h0000_0001;
 		  else if((lowgamma_result >= 32'h0000_1EC4)&&(lowgamma_result <= 32'h0000_4301))
-			 slv_reg8 = slv_reg8 + 32'h0001_0000;
-		  if((slv_reg8 >= 32'h0010_0001)&&(slv_reg6 > 32'h0000_0032))
-			 slv_reg9 = 32'h0000_0000;
-		  else if((slv_reg8 >= 32'h0010_0001)&&(slv_reg6 <= 32'h0000_0032))
-			 slv_reg9 = 32'h0000_0001;
+			 slv_reg9 = slv_reg9 + 32'h0001_0000;
+		  if((slv_reg9 >= 32'h0002_0001)&&(slv_reg4 > 32'h0000_0032))
+			 slv_reg10 = 32'h0000_0000;
+		  else if((slv_reg9 >= 32'h0002_0001)&&(slv_reg4 <= 32'h0000_0032))
+			 slv_reg10 = 32'h0000_0001;
 		  else
-			 slv_reg9 = 32'h0000_0010;
+			 slv_reg10 = 32'h0000_0002;
 	  end
   // ------------------------------------------------------
   // Example code to read/write user logic slave model s/w accessible registers
@@ -198,10 +202,10 @@ output                                    IP2Bus_Error;
   // ------------------------------------------------------
 
   assign
-    slv_reg_write_sel = Bus2IP_WrCE[9:0],
-    slv_reg_read_sel  = Bus2IP_RdCE[9:0],
-    slv_write_ack     = Bus2IP_WrCE[0] || Bus2IP_WrCE[1] || Bus2IP_WrCE[2] || Bus2IP_WrCE[3] || Bus2IP_WrCE[4] || Bus2IP_WrCE[5] || Bus2IP_WrCE[6] || Bus2IP_WrCE[7] || Bus2IP_WrCE[8] || Bus2IP_WrCE[9],
-    slv_read_ack      = Bus2IP_RdCE[0] || Bus2IP_RdCE[1] || Bus2IP_RdCE[2] || Bus2IP_RdCE[3] || Bus2IP_RdCE[4] || Bus2IP_RdCE[5] || Bus2IP_RdCE[6] || Bus2IP_RdCE[7] || Bus2IP_RdCE[8] || Bus2IP_RdCE[9];
+    slv_reg_write_sel = Bus2IP_WrCE[10:0],
+    slv_reg_read_sel  = Bus2IP_RdCE[10:0],
+    slv_write_ack     = Bus2IP_WrCE[0] || Bus2IP_WrCE[1] || Bus2IP_WrCE[2] || Bus2IP_WrCE[3] || Bus2IP_WrCE[4] || Bus2IP_WrCE[5] || Bus2IP_WrCE[6] || Bus2IP_WrCE[7] || Bus2IP_WrCE[8] || Bus2IP_WrCE[9] || Bus2IP_WrCE[10],
+    slv_read_ack      = Bus2IP_RdCE[0] || Bus2IP_RdCE[1] || Bus2IP_RdCE[2] || Bus2IP_RdCE[3] || Bus2IP_RdCE[4] || Bus2IP_RdCE[5] || Bus2IP_RdCE[6] || Bus2IP_RdCE[7] || Bus2IP_RdCE[8] || Bus2IP_RdCE[9] || Bus2IP_RdCE[10];
 
   // implement slave model register(s)
   always @( posedge Bus2IP_Clk )
@@ -211,88 +215,95 @@ output                                    IP2Bus_Error;
         begin
           slv_reg0 <= 0;
           slv_reg1 <= 0;
-          slv_reg2 <= 0;
+          //slv_reg2 <= 0;
           slv_reg3 <= 0;
           slv_reg4 <= 0;
-//          slv_reg5 <= 0;
-//          slv_reg6 <= 0;
-//          slv_reg7 <= 0;
-//          slv_reg8 <= 0;
-//          slv_reg9 <= 0;
+          slv_reg5 <= 0;
+          /*slv_reg6 <= 0;
+          slv_reg7 <= 0;
+          slv_reg8 <= 0;
+          slv_reg9 <= 0;
+          slv_reg10 <= 0;*/
         end
       else
         case ( slv_reg_write_sel )
-          10'b1000000000 :
+          11'b10000000000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg0[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0100000000 :
+          11'b01000000000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg1[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0010000000 :
+          /*11'b00100000000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
-                slv_reg2[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0001000000 :
+                slv_reg2[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];*/
+          11'b00010000000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg3[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0000100000 :
+          11'b00001000000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg4[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          /*10'b0000010000 :
+          11'b00000100000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg5[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0000001000 :
+          /*11'b00000010000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg6[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0000000100 :
+          11'b00000001000 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg7[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0000000010 :
+          11'b00000000100 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
                 slv_reg8[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
-          10'b0000000001 :
+          11'b00000000010 :
             for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
               if ( Bus2IP_BE[byte_index] == 1 )
-                slv_reg9[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];*/
+                slv_reg9[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];
+          11'b00000000001 :
+            for ( byte_index = 0; byte_index <= (C_SLV_DWIDTH/8)-1; byte_index = byte_index+1 )
+              if ( Bus2IP_BE[byte_index] == 1 )
+                slv_reg10[(byte_index*8) +: 8] <= Bus2IP_Data[(byte_index*8) +: 8];*/
           default : begin
             slv_reg0 <= slv_reg0;
             slv_reg1 <= slv_reg1;
-            slv_reg2 <= slv_reg2;
+            //slv_reg2 <= slv_reg2;
             slv_reg3 <= slv_reg3;
             slv_reg4 <= slv_reg4;
-//            slv_reg5 <= slv_reg5;
-//            slv_reg6 <= slv_reg6;
-//            slv_reg7 <= slv_reg7;
-//            slv_reg8 <= slv_reg8;
-//            slv_reg9 <= slv_reg9;
+            slv_reg5 <= slv_reg5;
+            /*slv_reg6 <= slv_reg6;
+            slv_reg7 <= slv_reg7;
+            slv_reg8 <= slv_reg8;
+            slv_reg9 <= slv_reg9;
+            slv_reg10 <= slv_reg10;*/
                     end
         endcase
 
     end // SLAVE_REG_WRITE_PROC
 
   // implement slave model register read mux
-  always @( slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or slv_reg8 or slv_reg9 )
+  always @( slv_reg_read_sel or slv_reg0 or slv_reg1 or slv_reg2 or slv_reg3 or slv_reg4 or slv_reg5 or slv_reg6 or slv_reg7 or slv_reg8 or slv_reg9 or slv_reg10 )
     begin 
 
       case ( slv_reg_read_sel )
-        10'b1000000000 : slv_ip2bus_data <= slv_reg0;
-        10'b0100000000 : slv_ip2bus_data <= slv_reg1;
-        10'b0010000000 : slv_ip2bus_data <= slv_reg2;
-        10'b0001000000 : slv_ip2bus_data <= slv_reg3;
-        10'b0000100000 : slv_ip2bus_data <= slv_reg4;
-        10'b0000010000 : slv_ip2bus_data <= slv_reg5;
-        10'b0000001000 : slv_ip2bus_data <= slv_reg6;
-        10'b0000000100 : slv_ip2bus_data <= slv_reg7;
-        10'b0000000010 : slv_ip2bus_data <= slv_reg8;
-        10'b0000000001 : slv_ip2bus_data <= slv_reg9;
+        11'b10000000000 : slv_ip2bus_data <= slv_reg0;
+        11'b01000000000 : slv_ip2bus_data <= slv_reg1;
+        11'b00100000000 : slv_ip2bus_data <= slv_reg2;
+        11'b00010000000 : slv_ip2bus_data <= slv_reg3;
+        11'b00001000000 : slv_ip2bus_data <= slv_reg4;
+        11'b00000100000 : slv_ip2bus_data <= slv_reg5;
+        11'b00000010000 : slv_ip2bus_data <= slv_reg6;
+        11'b00000001000 : slv_ip2bus_data <= slv_reg7;
+        11'b00000000100 : slv_ip2bus_data <= slv_reg8;
+        11'b00000000010 : slv_ip2bus_data <= slv_reg9;
+        11'b00000000001 : slv_ip2bus_data <= slv_reg10;
         default : slv_ip2bus_data <= 0;
       endcase
 
