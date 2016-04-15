@@ -111,6 +111,8 @@ output                                    IP2Bus_Error;
   wire [31:0] lowbeta_result;
   wire [31:0] highbeta_result;
   wire [31:0] lowgamma_result;
+  wire [31:0] attention;
+  wire [31:0] knn_value;
   // Nets for user logic slave model s/w accessible register example
   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg0;
   reg        [C_SLV_DWIDTH-1 : 0]           slv_reg1;
@@ -140,6 +142,8 @@ output                                    IP2Bus_Error;
   assign lowbeta_result = (lowbeta1+oldlowbeta) >> 1;
   assign highbeta_result = (highbeta1+oldhighbeta) >> 1;
   assign lowgamma_result = (lowgamma1+oldlowgamma) >> 1;
+  assign attention = slv_reg4;
+  assign knn_value = slv_reg9;
   
   Filter filter_lowbeta(lowbeta, oldlowbeta, 2'b00, lowbeta1);
   Filter filter_highbeta(highbeta, oldhighbeta, 2'b01, highbeta1);
@@ -175,12 +179,19 @@ output                                    IP2Bus_Error;
 			 slv_reg9 = slv_reg9 + 32'h0000_0001;
 		  else if((lowgamma_result >= 32'h0000_1EC4)&&(lowgamma_result <= 32'h0000_4301))
 			 slv_reg9 = slv_reg9 + 32'h0001_0000;
-		  if((slv_reg9 >= 32'h0002_0001)&&(slv_reg4 > 32'h0000_0032))
+		  
+		  if((knn_value >= 32'h0002_0001)&&(attention > 32'h0000_0032))
 			 slv_reg10 = 32'h0000_0000;
-		  else if((slv_reg9 >= 32'h0002_0001)&&(slv_reg4 <= 32'h0000_0032))
+		  else if((knn_value >= 32'h0002_0001)&&(attention <= 32'h0000_0032))
 			 slv_reg10 = 32'h0000_0001;
 		  else
 			 slv_reg10 = 32'h0000_0002;
+		  /*if(slv_reg9 <= 32'h0001_0002)
+		    slv_reg10 = 32'h0000_0002;
+		  else if(slv_reg4 > 32'h0000_0032)
+			 slv_reg10 = 32'h0000_0000;
+		  else
+			 slv_reg10 = 32'h0000_0001;*/
 	  end
   // ------------------------------------------------------
   // Example code to read/write user logic slave model s/w accessible registers

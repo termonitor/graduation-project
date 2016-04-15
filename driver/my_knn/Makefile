@@ -1,5 +1,5 @@
-KERN_SRC = /home/hello/linux-digilent-master
-obj-m := my_test.o
+KERN_SRC = /home/lenovo/linux-digilent-master
+obj-m := my_knn.o
 
 all:
 	make -C $(KERN_SRC) ARCH=arm M=`pwd` modules
