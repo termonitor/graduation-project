@@ -2,6 +2,8 @@
 if [ ! -d /sys/class/gpio/gpio76 ]; then
 	echo 76 > /sys/class/gpio/export
 fi
+#simple-agent的注册
+#my_knn模块的插入
 while [ "1" = "1" ];
 do
 	sw_value=`cat /sys/class/gpio/gpio76/value`;

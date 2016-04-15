@@ -8,6 +8,7 @@
 #include "MGpio.h"
 #include "MFile.h"
 #include "MAction.h"
+#include "MPeripheral.h"
 
 pthread_t thread_socket;
 pthread_t thread_sw;
@@ -74,6 +75,7 @@ int main()
 			closeOled();
 			closeGpio();
 			closeFile();
+			closePeripheral();
 			return 0;
 		}
 	}

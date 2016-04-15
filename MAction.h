@@ -6,6 +6,7 @@
 #include "MOled.h"
 #include "MGpio.h"
 #include "MFile.h"
+#include "MPeripheral.h"
 
 int gameLdStatus;
 

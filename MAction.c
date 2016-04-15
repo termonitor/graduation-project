@@ -9,6 +9,7 @@ extern int gameLdStatus;
 void initAction()
 {
 	gameLdStatus = -1;
+	initPeripheral();
 }
 
 void oledOutput(int num, int status)
@@ -156,6 +157,10 @@ void action(int *signal, int config)
 			break;
 		case 11:
 			oledOutput(signal[9], 11); //middleGamma
+			break;
+		case 12:
+			setPeripheralData(signal[6], signal[7], signal[8], signal[10], signal[11]);
+			oledOutput(getPeripheralResult(), -1);
 			break;
 	}
 	snprintf(buffer, 1024, "%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d\n", 
