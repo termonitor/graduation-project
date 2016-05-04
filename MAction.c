@@ -160,7 +160,14 @@ void action(int *signal, int config)
 			break;
 		case 12:
 			setPeripheralData(signal[6], signal[7], signal[8], signal[10], signal[11]);
-			oledOutput(getPeripheralResult(), -1);
+		//	oledOutput(getPeripheralResult(), -1);
+			int result = getPeripheralResult();
+			addEmotionFlag(result);
+			printImage();
+			break;
+		default:
+			clearImage();
+			printImage();
 			break;
 	}
 	snprintf(buffer, 1024, "%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d\n", 

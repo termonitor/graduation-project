@@ -32,5 +32,6 @@ void addLowBetaFlag();
 void addHighBetaFlag();
 void addLowGammaFlag();
 void addMiddleGammaFlag();
+void addEmotionFlag(int num);
 
 #endif

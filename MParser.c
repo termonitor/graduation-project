@@ -179,15 +179,18 @@ int parseByte(char buffer)
 	switch(parserStatus)
 	{
 		case 1:
+			//AA
 			if((buffer & 0xFF) != PARSER_SYNC_BYTE)
 				break;
+			//2
 			parserStatus = PARSER_STATE_SYNC_CHECK;
 			break;
 		case 2:
+			//AA
 			if((buffer & 0xFF) == PARSER_SYNC_BYTE)
-				parserStatus = PARSER_STATE_PAYLOAD_LENGTH;
+				parserStatus = PARSER_STATE_PAYLOAD_LENGTH;//3
 			else
-				parserStatus = PARSER_STATE_SYNC;
+				parserStatus = PARSER_STATE_SYNC;//1
 			break;
 		case 3:
 			if((buffer & 0XFF) != 4 && (buffer & 0XFF) != 32)
