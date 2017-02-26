@@ -342,7 +342,7 @@ module Filter
 reg [31:0] temp;
 assign result = temp;
 
-always
+always @(data or old)
 begin 
 	case(Filterop)
 		//lowbeta
