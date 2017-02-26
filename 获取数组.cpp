@@ -26,8 +26,8 @@ void printImage()
 }
 
 /**
-    loc£ºÎ»ÖÃ
-    num: Êı×Ö 
+    locï¼šä½ç½®
+    num: æ•°å­— 
 **/
 void setNum(int loc, int num)
 {
